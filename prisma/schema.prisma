@@ -1,0 +1,128 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum FuelType {
+  ESSENCE
+  DIESEL
+  HYBRIDE
+  ELECTRIQUE
+}
+
+enum Transmission {
+  MANUELLE
+  AUTOMATIQUE
+}
+
+enum Category {
+  ECONOMIQUE
+  COMPACTE
+  SUV
+  MONOSPACE
+  CABRIOLET
+  LUXE
+  UTILITAIRE
+}
+
+model User {
+  id              String   @id @default(cuid())
+  name            String
+  email           String   @unique
+  hashedPassword  String
+  phone           String?
+  birthDate       DateTime
+  licenseDate     DateTime
+  isPro           Boolean  @default(false)
+
+  entreprise      Entreprise? @relation(fields: [entrepriseId], references: [id])
+  entrepriseId    String?
+
+  rentals         Rental[]
+  createdAt       DateTime    @default(now())
+}
+
+model Entreprise {
+  id          String   @id @default(cuid())
+  name        String
+  tahiti_number String   @unique
+  siren       String?  @unique
+  contactName String
+  email       String
+  phone       String
+  address     String
+  description String
+
+  users       User[]
+  createdAt   DateTime @default(now())
+}
+
+model Agency {
+  id          String   @id @default(cuid())
+  name        String
+  tahiti_number String @unique
+  siret       String?   @unique
+  email       String
+  phone       String
+  address     String
+  island      String
+  website     String?
+  isApproved  Boolean  @default(false)
+
+  cars        Car[]
+  createdAt   DateTime @default(now())
+}
+
+model Car {
+  id              String      @id @default(cuid())
+  brand           String
+  model           String
+  year            Int
+  category        Category
+  fuelType        FuelType
+  transmission    Transmission
+  seats           Int
+  doors           Int
+  airConditioning Boolean
+  mileageLimit    Int?
+  pricePerDay     Float
+  pricePerWeek    Float?
+
+  imageUrls       CarImage[]
+  available       Boolean     @default(true)
+
+  agency          Agency      @relation(fields: [agencyId], references: [id])
+  agencyId        String
+
+  rentals         Rental[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model CarImage {
+  id        String @id @default(cuid())
+  url       String
+  car       Car    @relation(fields: [carId], references: [id])
+  carId     String
+}
+
+model Rental {
+  id            String   @id @default(cuid())
+  startDate     DateTime
+  endDate       DateTime
+  totalPrice    Float
+  status        String
+
+  car           Car      @relation(fields: [carId], references: [id])
+  carId         String
+
+  user          User     @relation(fields: [userId], references: [id])
+  userId        String
+
+  createdAt     DateTime @default(now())
+}
