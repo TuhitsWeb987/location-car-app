@@ -1,9 +1,14 @@
+import { HeroSection } from "@/components/HeroSection";
+import { HowWorkSection } from "@/components/HowWorkSection";
+import { LocationFamousSection } from "@/components/LocationFamousSection";
+import { Section } from "@/components/Section";
+
 export default function HomePage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50">
-      <h1 className="text-3xl font-bold text-blue-600">
-        🚗 Bienvenue sur Car Rental App !
-      </h1>
-    </main>
+    <Section className="flex flex-col items-center justify-center w-full">
+      <HeroSection />
+      <HowWorkSection />
+      <LocationFamousSection />
+    </Section>
   );
 }
