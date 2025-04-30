@@ -1,4 +1,4 @@
-import { Section } from "./Section"
+import { Section } from "../Commons/Section"
 
 export const HowWorkSection = () => {
     return (

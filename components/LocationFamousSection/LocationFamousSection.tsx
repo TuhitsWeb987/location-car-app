@@ -1,8 +1,8 @@
-import { Section } from "./Section";
+import { Section } from "../Commons/Section";
 import Tahiti from "@/public/tahiti.png";
 import Moorea from "@/public/moorea.png";
 import Bora from "@/public/borabora.png";
-import { Card } from "./ui/card";
+import { Card } from "../ui/card";
 import Image from "next/image";
 
 export const LocationFamousSection = () => {
