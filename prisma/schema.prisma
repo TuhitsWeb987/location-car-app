@@ -76,6 +76,8 @@ model Agency {
 
   cars        Car[]
   createdAt   DateTime @default(now())
+  mainLocationId String?
+  mainLocation  Location? @relation(fields: [mainLocationId], references: [id])
 }
 
 model Car {
@@ -102,6 +104,15 @@ model Car {
   rentals         Rental[]
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
+
+  options         CarOption[]
+}
+
+model CarOption {
+  id      String @id @default(cuid())
+  name    String
+  car     Car @relation(fields: [carId], references: [id])
+  carId   String
 }
 
 model CarImage {
@@ -113,8 +124,8 @@ model CarImage {
 
 model Rental {
   id            String   @id @default(cuid())
-  startDate     DateTime
-  endDate       DateTime
+  pickupDate     DateTime
+  returnDate       DateTime
   totalPrice    Float
   status        String
 
@@ -125,4 +136,38 @@ model Rental {
   userId        String
 
   createdAt     DateTime @default(now())
+  pickupLocationId  String
+  returnLocationId  String
+  pickupLocation    Location @relation("pickupLocation", fields: [pickupLocationId], references: [id])
+  returnLocation    Location @relation("returnLocation", fields: [returnLocationId], references: [id])
 }
+
+model Location {
+  id              String   @id @default(cuid())
+  name            String   // Ex: Aéroport de Faa'a
+  type            LocationType
+  region          String   // Ex: Tahiti, Moorea
+  isActive        Boolean  @default(true)
+  isPickupOnly    Boolean  @default(false)
+  isReturnOnly    Boolean  @default(false)
+  isDefault       Boolean  @default(false)
+  isSameForReturn Boolean  @default(true)
+
+  // (optionnel, pour plus tard)
+  latitude        Float?
+  longitude       Float?
+
+  // Relations
+  rentalsPickups  Rental[] @relation("pickupLocation")
+  rentalsReturns  Rental[] @relation("returnLocation")
+  agencies        Agency[] // Si une agence est associée à ce lieu
+}
+
+enum LocationType {
+  AGENCE
+  AÉROPORT
+  HÔTEL
+  PORT
+  AUTRE
+}
+

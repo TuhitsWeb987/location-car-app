@@ -1,8 +1,82 @@
 const { PrismaClient } = require("@prisma/client");
-const { url } = require("inspector");
 const prisma = new PrismaClient();
 
 async function main() {
+  const locations = await prisma.location.createMany({
+    data: [
+      {
+        name: "Aéroport de Faa'a",
+        type: "AÉROPORT",
+        region: "Tahiti",
+        isPickupOnly: false,
+        isReturnOnly: false,
+        isDefault: true,
+        isSameForReturn: true,
+        latitude: -17.5537,
+        longitude: -149.6063,
+      },
+      {
+        name: "Port de Papeete",
+        type: "PORT",
+        region: "Tahiti",
+        isPickupOnly: false,
+        isReturnOnly: true,
+        isDefault: false,
+        isSameForReturn: true,
+        latitude: -17.5343,
+        longitude: -149.5665,
+      },
+      {
+        name: "Agence Vaima Center",
+        type: "AGENCE",
+        region: "Papeete",
+        isPickupOnly: false,
+        isReturnOnly: false,
+        isDefault: true,
+        isSameForReturn: true,
+        latitude: -17.5337,
+        longitude: -149.5669,
+      },
+      {
+        name: "Hôtel Intercontinental Moorea",
+        type: "HÔTEL",
+        region: "Moorea",
+        isPickupOnly: true,
+        isReturnOnly: false,
+        isDefault: false,
+        isSameForReturn: false,
+        latitude: -17.4971,
+        longitude: -149.8817,
+      },
+      {
+        name: "Aéroport de Moorea",
+        type: "AÉROPORT",
+        region: "Moorea",
+        isPickupOnly: false,
+        isReturnOnly: false,
+        isDefault: true,
+        isSameForReturn: true,
+        latitude: -17.4891,
+        longitude: -149.7617,
+      },
+      {
+        name: "Agence Quai des Ferries",
+        type: "AGENCE",
+        region: "Papeete",
+        isPickupOnly: false,
+        isReturnOnly: false,
+        isDefault: false,
+        isSameForReturn: true,
+        latitude: -17.5341,
+        longitude: -149.5679,
+      },
+    ],
+  });
+
+  const mainLocation = await prisma.location.findFirst({
+    where: { name: "Hôtel Intercontinental Moorea" },
+  });
+
   const agency = await prisma.agency.create({
     data: {
       name: "Moorea Cars",
@@ -14,6 +88,7 @@ async function main() {
       website: "https://mooreacars.pf",
       isApproved: true,
       tahiti_number: "12345667776542123134",
+      mainLocationId: mainLocation.id,
     },
   });
 
@@ -35,8 +110,8 @@ async function main() {
       agency: { connect: { id: agency.id } },
       imageUrls: {
         create: [
-          { url: "https://source.unsplash.com/featured/?car,yaris" },
-          { url: "https://source.unsplash.com/featured/?toyota,yaris,side" },
+          { url: "https://images.unsplash.com/photo-1633768428926-81fb4499f795?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+          { url: "https://images.unsplash.com/photo-1633768428926-81fb4499f795?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
         ],
       },
     },
@@ -60,8 +135,8 @@ async function main() {
       agency: { connect: { id: agency.id } },
       imageUrls: {
         create: [
-          { url: "https://source.unsplash.com/featured" },
-          { url: "https://source.unsplash.com/featured" },
+          { url: "https://images.unsplash.com/photo-1633768428926-81fb4499f795?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
+          { url: "https://images.unsplash.com/photo-1633768428926-81fb4499f795?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" },
         ],
       },
     },
@@ -82,6 +157,7 @@ async function main() {
 main()
   .then(() => {
     console.log("🌴 Données de test insérées avec succès");
+
     return prisma.$disconnect();
   })
   .catch((e) => {

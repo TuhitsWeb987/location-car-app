@@ -39,7 +39,9 @@ CREATE TABLE "Agency" (
     "island" TEXT NOT NULL,
     "website" TEXT,
     "isApproved" BOOLEAN NOT NULL DEFAULT false,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "mainLocationId" TEXT,
+    CONSTRAINT "Agency_mainLocationId_fkey" FOREIGN KEY ("mainLocationId") REFERENCES "Location" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -65,6 +67,14 @@ CREATE TABLE "Car" (
 );
 
 -- CreateTable
+CREATE TABLE "CarOption" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "carId" TEXT NOT NULL,
+    CONSTRAINT "CarOption_carId_fkey" FOREIGN KEY ("carId") REFERENCES "Car" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
 CREATE TABLE "CarImage" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "url" TEXT NOT NULL,
@@ -75,15 +85,34 @@ CREATE TABLE "CarImage" (
 -- CreateTable
 CREATE TABLE "Rental" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "startDate" DATETIME NOT NULL,
-    "endDate" DATETIME NOT NULL,
+    "pickupDate" DATETIME NOT NULL,
+    "returnDate" DATETIME NOT NULL,
     "totalPrice" REAL NOT NULL,
     "status" TEXT NOT NULL,
     "carId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "pickupLocationId" TEXT NOT NULL,
+    "returnLocationId" TEXT NOT NULL,
     CONSTRAINT "Rental_carId_fkey" FOREIGN KEY ("carId") REFERENCES "Car" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Rental_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    CONSTRAINT "Rental_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Rental_pickupLocationId_fkey" FOREIGN KEY ("pickupLocationId") REFERENCES "Location" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Rental_returnLocationId_fkey" FOREIGN KEY ("returnLocationId") REFERENCES "Location" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Location" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "region" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isPickupOnly" BOOLEAN NOT NULL DEFAULT false,
+    "isReturnOnly" BOOLEAN NOT NULL DEFAULT false,
+    "isDefault" BOOLEAN NOT NULL DEFAULT false,
+    "isSameForReturn" BOOLEAN NOT NULL DEFAULT true,
+    "latitude" REAL,
+    "longitude" REAL
 );
 
 -- CreateIndex
