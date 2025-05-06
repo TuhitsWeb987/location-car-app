@@ -6,12 +6,14 @@ import { useEffect } from "react";
 import { Button } from "../ui/button";
 import { CarSearchParams } from "@/types/car";
 import { LoaderCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function CarsSection({
   searchParams,
 }: {
   searchParams: CarSearchParams;
 }) {
+  const router = useRouter();
   const pickupDateTime = searchParams.pickupDateTime || "";
   const returnDateTime = searchParams.returnDateTime || "";
   const pickupLocation = searchParams.pickupLocation || "";
@@ -20,7 +22,7 @@ export default function CarsSection({
   const setFilters = useCarStore((s) => s.setFilters);
 
   useEffect(() => {
-     setFilters({
+    setFilters({
       pickupDateTime,
       returnDateTime,
       pickupLocation,
@@ -34,6 +36,17 @@ export default function CarsSection({
     pickupLocation,
     returnLocation,
   });
+
+  const handleBooking = (cardId: string) => {
+    const query = new URLSearchParams({
+      pickupDateTime: pickupDateTime,
+      returnDateTime: returnDateTime,
+      pickupLocation: pickupLocation,
+      returnLocation: returnLocation,
+    });
+
+    router.push(`/cars/${cardId}/booking?${query}`);
+  };
 
   return (
     <div className="flex-10/12 flex flex-col gap-8 items-start p-4">
@@ -82,7 +95,12 @@ export default function CarsSection({
               </div>
               <div className="flex flex-col gap-4 items-center justify-center">
                 <p className="font-bold">{car.pricePerDay} XPF</p>
-                <Button className="bg-[#F7835A] text-white">Réserver</Button>
+                <Button
+                  onClick={() => handleBooking(car.id)}
+                  className="bg-[#F7835A] text-white"
+                >
+                  Réserver
+                </Button>
               </div>
             </div>
           ))}

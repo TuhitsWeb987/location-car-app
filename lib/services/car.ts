@@ -35,3 +35,17 @@ export async function getAvailableCars(filters: CarFilters) {
     },
   });
 }
+
+export async function getCarById(carId: string) {
+  const car = await prisma.car.findUnique({
+    where: {
+      id: carId,
+    },
+    include: {
+      agency: { include: { mainLocation: true } },
+      imageUrls: true,
+      options: true,
+    },
+  });
+  return car;
+}
