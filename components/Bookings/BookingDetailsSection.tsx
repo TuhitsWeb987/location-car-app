@@ -6,6 +6,7 @@ import { useCarDetailsQuery } from "@/lib/hooks/useCarDetailsQuery";
 import { OptionBookingSection } from "./OptionBookingSection";
 import { Button } from "../ui/button";
 import { PriceSummarySection } from "./PriceSummarySection";
+import { useLocationStore } from "@/lib/stores/locationStore";
 
 export const BookingDetailsSection = ({
   searchParams,
@@ -14,11 +15,20 @@ export const BookingDetailsSection = ({
   searchParams: CarSearchParams;
   params: { carId: string };
 }) => {
-  const { data: car, isLoading, error } = useCarDetailsQuery(params.carId);
+  const { data: car } = useCarDetailsQuery(params.carId);
   const pickupDateTime = searchParams.pickupDateTime || "";
   const returnDateTime = searchParams.returnDateTime || "";
   const pickupLocation = searchParams.pickupLocation || "";
   const returnLocation = searchParams.returnLocation || "";
+
+  const locations = useLocationStore((s) => s.locations);
+
+  const pickupLocationName = locations.find(
+    (location) => location.id === pickupLocation
+  )?.name;
+  const returnLocationName = locations.find(
+    (location) => location.id === returnLocation
+  )?.name;
   return (
     <div className="flex-2/3 space-y-6">
       <h2 className="text-3xl font-bold text-[#003A45]">Date et heure</h2>
@@ -36,11 +46,11 @@ export const BookingDetailsSection = ({
       <h2 className="text-3xl font-bold text-[#003A45]">Lieu</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <LocationBookingSection
-          location={pickupLocation}
+          location={pickupLocationName}
           name="Date de prise du véhicule"
         />
         <LocationBookingSection
-          location={returnLocation}
+          location={returnLocationName}
           name="Date de retour du véhicule"
         />
       </div>

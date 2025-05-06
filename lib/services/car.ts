@@ -6,7 +6,7 @@ export async function getAvailableCars(filters: CarFilters) {
 
   const location = await prisma.location.findFirst({
     where: {
-      name: pickupLocation,
+      id: pickupLocation,
     },
   });
 
