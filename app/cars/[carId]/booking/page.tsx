@@ -13,7 +13,7 @@ export default async function Page({
   const resolvedSearchParams = await searchParams;
   const resolvedParams = await params;
   return (
-    <Section className="flex flex-col lg:flex-row gap-8">
+    <Section className="flex flex-col lg:flex-row gap-8 h-full mt-5">
       <CarsDetailsSection params={resolvedParams} />
       <BookingDetailsSection params={resolvedParams} searchParams={resolvedSearchParams} />
     </Section>

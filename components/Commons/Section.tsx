@@ -6,7 +6,7 @@ export const Section = (
 ) => {
   return (
     <section
-      className={cn("max-w-7xl m-auto", props.className)}
+      className={cn("max-w-7xl m-auto pb-12", props.className)}
       style={props.style}
     >
       {props.children}

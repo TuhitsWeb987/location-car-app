@@ -11,7 +11,7 @@ export default async function Page({
 
 
   return (
-    <Section className="flex gap-4 justify-center mt-5">
+    <Section className="flex gap-4 justify-center mt-5 h-full">
       <FiltersSection searchParams={resolvedSearchParams} />
       <CarsSection searchParams={resolvedSearchParams} />
     </Section>
