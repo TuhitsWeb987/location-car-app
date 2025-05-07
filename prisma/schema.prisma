@@ -32,56 +32,40 @@ enum Category {
 
 model User {
   id              String   @id @default(cuid())
-  name            String
-  email           String   @unique
-  hashedPassword  String
-  phone           String?
-  birthDate       DateTime
-  licenseDate     DateTime
-  isPro           Boolean  @default(false)
+  name           String
+  email          String   @unique
 
-  entreprise      Entreprise? @relation(fields: [entrepriseId], references: [id])
-  entrepriseId    String?
+  rentals       Rental[]
+  createdAt     DateTime  @default(now())
+  emailVerified Boolean
+  image         String?
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
 
-  rentals         Rental[]
-  createdAt       DateTime    @default(now())
-}
-
-model Entreprise {
-  id          String   @id @default(cuid())
-  name        String
-  tahiti_number String   @unique
-  siren       String?  @unique
-  contactName String
-  email       String
-  phone       String
-  address     String
-  description String
-
-  users       User[]
-  createdAt   DateTime @default(now())
+  @@map("user")
 }
 
 model Agency {
-  id          String   @id @default(cuid())
-  name        String
-  tahiti_number String @unique
-  siret       String?   @unique
-  email       String
-  phone       String
-  address     String
-  island      String
-  website     String?
-  isApproved  Boolean  @default(false)
+  id            String  @id @default(cuid())
+  name          String
+  tahiti_number String  @unique
+  siret         String? @unique
+  email         String
+  phone         String
+  address       String
+  island        String
+  website       String?
+  isApproved    Boolean @default(false)
 
-  cars        Car[]
-  createdAt   DateTime @default(now())
+  cars           Car[]
+  createdAt      DateTime  @default(now())
   mainLocationId String?
-  mainLocation  Location? @relation(fields: [mainLocationId], references: [id])
+  mainLocation   Location? @relation(fields: [mainLocationId], references: [id])
 }
 
 model Car {
-  id              String      @id @default(cuid())
+  id              String       @id @default(cuid())
   brand           String
   model           String
   year            Int
@@ -95,72 +79,72 @@ model Car {
   pricePerDay     Float
   pricePerWeek    Float?
 
-  imageUrls       CarImage[]
-  available       Boolean     @default(true)
+  imageUrls CarImage[]
+  available Boolean    @default(true)
 
-  agency          Agency      @relation(fields: [agencyId], references: [id])
-  agencyId        String
+  agency   Agency @relation(fields: [agencyId], references: [id])
+  agencyId String
 
-  rentals         Rental[]
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  rentals   Rental[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  options         CarOption[]
+  options CarOption[]
 }
 
 model CarOption {
-  id      String @id @default(cuid())
-  name    String
-  car     Car @relation(fields: [carId], references: [id])
-  carId   String
+  id    String @id @default(cuid())
+  name  String
+  car   Car    @relation(fields: [carId], references: [id])
+  carId String
 }
 
 model CarImage {
-  id        String @id @default(cuid())
-  url       String
-  car       Car    @relation(fields: [carId], references: [id])
-  carId     String
+  id    String @id @default(cuid())
+  url   String
+  car   Car    @relation(fields: [carId], references: [id])
+  carId String
 }
 
 model Rental {
-  id            String   @id @default(cuid())
-  pickupDate     DateTime
-  returnDate       DateTime
-  totalPrice    Float
-  status        String
+  id         String   @id @default(cuid())
+  pickupDate DateTime
+  returnDate DateTime
+  totalPrice Float
+  status     String
 
-  car           Car      @relation(fields: [carId], references: [id])
-  carId         String
+  car   Car    @relation(fields: [carId], references: [id])
+  carId String
 
-  user          User     @relation(fields: [userId], references: [id])
-  userId        String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 
-  createdAt     DateTime @default(now())
-  pickupLocationId  String
-  returnLocationId  String
-  pickupLocation    Location @relation("pickupLocation", fields: [pickupLocationId], references: [id])
-  returnLocation    Location @relation("returnLocation", fields: [returnLocationId], references: [id])
+  createdAt        DateTime @default(now())
+  pickupLocationId String
+  returnLocationId String
+  pickupLocation   Location @relation("pickupLocation", fields: [pickupLocationId], references: [id])
+  returnLocation   Location @relation("returnLocation", fields: [returnLocationId], references: [id])
 }
 
 model Location {
-  id              String   @id @default(cuid())
-  name            String   // Ex: Aéroport de Faa'a
+  id              String       @id @default(cuid())
+  name            String // Ex: Aéroport de Faa'a
   type            LocationType
-  region          String   // Ex: Tahiti, Moorea
-  isActive        Boolean  @default(true)
-  isPickupOnly    Boolean  @default(false)
-  isReturnOnly    Boolean  @default(false)
-  isDefault       Boolean  @default(false)
-  isSameForReturn Boolean  @default(true)
+  region          String // Ex: Tahiti, Moorea
+  isActive        Boolean      @default(true)
+  isPickupOnly    Boolean      @default(false)
+  isReturnOnly    Boolean      @default(false)
+  isDefault       Boolean      @default(false)
+  isSameForReturn Boolean      @default(true)
 
   // (optionnel, pour plus tard)
-  latitude        Float?
-  longitude       Float?
+  latitude  Float?
+  longitude Float?
 
   // Relations
-  rentalsPickups  Rental[] @relation("pickupLocation")
-  rentalsReturns  Rental[] @relation("returnLocation")
-  agencies        Agency[] // Si une agence est associée à ce lieu
+  rentalsPickups Rental[] @relation("pickupLocation")
+  rentalsReturns Rental[] @relation("returnLocation")
+  agencies       Agency[] // Si une agence est associée à ce lieu
 }
 
 enum LocationType {
@@ -171,3 +155,47 @@ enum LocationType {
   AUTRE
 }
 
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
