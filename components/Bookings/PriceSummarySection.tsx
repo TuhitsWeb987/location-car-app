@@ -1,11 +1,15 @@
+import { useEffect } from "react";
+
 export const PriceSummarySection = ({
   baseRate,
   pickupDateTime,
   returnDateTime,
+  setTotalPrice,
 }: {
   baseRate: number;
   pickupDateTime: any;
   returnDateTime: any;
+  setTotalPrice: (totalprice: any) => void;
 }) => {
   const pickupDate = new Date(pickupDateTime);
   const returnDate = new Date(returnDateTime);
@@ -13,6 +17,10 @@ export const PriceSummarySection = ({
     (returnDate.getTime() - pickupDate.getTime()) / (1000 * 3600 * 24)
   );
   const totalPrice = baseRate * totalDays;
+
+  useEffect(() => {
+    setTotalPrice(totalPrice);
+  }, [totalPrice, setTotalPrice]);
 
   return (
     <div className="flex flex-col gap-4 bg-[#003A45] text-white p-6 rounded-lg shadow-md w-full md:w-1/3">

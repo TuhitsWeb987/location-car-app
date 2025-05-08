@@ -3,13 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { signIn } from "@/lib/auth-client";
+import { signIn, useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { FieldErrors, useForm } from "react-hook-form";
 import { FaGoogle } from "react-icons/fa";
 import { toast } from "sonner";
@@ -25,6 +25,9 @@ const schema = z.object({
 type Value = z.infer<typeof schema>;
 
 export default function SignInPage() {
+  const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
   const router = useRouter();
   const {
     register,
@@ -35,6 +38,12 @@ export default function SignInPage() {
   });
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (session) {
+      router.push("/");
+    }
+  });
 
   const onSubmit = async (data: Value) => {
     setLoading(true);
@@ -47,7 +56,11 @@ export default function SignInPage() {
       toast.error(email.error.message);
       return;
     } else {
-      router.push("/");
+      if (callbackUrl) {
+        router.push(callbackUrl);
+      } else {
+        router.push("/");
+      }
     }
     setLoading(false);
   };
@@ -88,21 +101,21 @@ export default function SignInPage() {
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit, onError)}>
-            <Input
-              id="email"
-              type="email"
-              {...register("email")}
-              placeholder="Email"
-              className={cn("bg-white", errors.email && "border-red-500")}
-            />
+          <Input
+            id="email"
+            type="email"
+            {...register("email")}
+            placeholder="Email"
+            className={cn("bg-white", errors.email && "border-red-500")}
+          />
 
-            <Input
-              id="password"
-              type="password"
-              placeholder="mot de passe"
-              {...register("password")}
-              className={cn("bg-white", errors.password && "border-red-500")}
-            />
+          <Input
+            id="password"
+            type="password"
+            placeholder="mot de passe"
+            {...register("password")}
+            className={cn("bg-white", errors.password && "border-red-500")}
+          />
 
           <Button
             disabled={loading}

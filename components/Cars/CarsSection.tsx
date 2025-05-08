@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { CarSearchParams } from "@/types/car";
 import { LoaderCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 
 export default function CarsSection({
   searchParams,
@@ -14,6 +15,7 @@ export default function CarsSection({
   searchParams: CarSearchParams;
 }) {
   const router = useRouter();
+  const { data: session } = useSession();
   const pickupDateTime = searchParams.pickupDateTime || "";
   const returnDateTime = searchParams.returnDateTime || "";
   const pickupLocation = searchParams.pickupLocation || "";
@@ -37,15 +39,18 @@ export default function CarsSection({
     returnLocation,
   });
 
-  const handleBooking = (cardId: string) => {
+  const handleBooking = (carId: string) => {
     const query = new URLSearchParams({
       pickupDateTime: pickupDateTime,
       returnDateTime: returnDateTime,
       pickupLocation: pickupLocation,
       returnLocation: returnLocation,
     });
-
-    router.push(`/cars/${cardId}/booking?${query}`);
+    if (!session) {
+      router.push(`/signin?callbackUrl=/cars/${carId}/booking?${query}`);
+    } else {
+      router.push(`/cars/${carId}/booking?${query}`);
+    }
   };
 
   return (

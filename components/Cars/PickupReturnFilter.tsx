@@ -59,7 +59,6 @@ export const PickupReturnFilter = ({
     searchParams.returnLocation || ""
   );
 
-  console.log("pickupLocation", pickupLocation);
   const handleSearch = () => {
     const pickupDateTime = combineDateAndTime(pickupDate, pickupTime);
     const returnDateTime = combineDateAndTime(returnDate, returnTime);
