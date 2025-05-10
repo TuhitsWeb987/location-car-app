@@ -80,7 +80,6 @@ export const BookingDetailsSection = ({
       toast.success("Réservation effectuée avec succès !");
 
       const { booking } = await res.json();
-      console.log(booking);
       router.push(`/bookings/${booking.id}/payment`);
     } catch (error) {
       console.error("Erreur lors de la réservation:", error);

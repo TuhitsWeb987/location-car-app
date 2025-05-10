@@ -3,7 +3,15 @@ import Image from "next/image";
 import { Section } from "./Section";
 import logo from "@/public/logo_rental_car.png";
 import { signOut, useSession } from "@/lib/auth-client";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { Car, LogOut, UserRound } from "lucide-react";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
@@ -30,6 +38,24 @@ export default function Header() {
           <a href="/" className="text-sm font-medium hover:text-[#003A45]">
             Accueil
           </a>
+          <Button
+            onClick={async () => {
+              try {
+                const res = await fetch("/api/debug/clear-rentals", {
+                  method: "DELETE",
+                });
+
+                if (!res.ok) throw new Error("Suppression échouée");
+
+                alert("Réservations supprimées !");
+              } catch (err) {
+                console.error(err);
+                alert("Une erreur est survenue.");
+              }
+            }}
+          >
+            Supprimer les réservations
+          </Button>
           {!session?.user ? (
             <>
               <a
@@ -75,7 +101,9 @@ export default function Header() {
                   <DropdownMenuItem className="flex items-center justify-center gap-2">
                     <a href="/my-bookings" className="flex items-center gap-2">
                       <Car className="w-5 h-5" />
-                      <span className="text-md font-semibold">Mes Réservations</span>
+                      <span className="text-md font-semibold">
+                        Mes Réservations
+                      </span>
                     </a>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -89,12 +117,15 @@ export default function Header() {
                             onSuccess: () => {
                               router.push("/");
                               router.refresh();
-                            }
-                          }
+                            },
+                          },
                         });
-                      }}><LogOut className="w-5 h-5 hover:text-white"/>Déconnexion</Button>
+                      }}
+                    >
+                      <LogOut className="w-5 h-5 hover:text-white" />
+                      Déconnexion
+                    </Button>
                   </DropdownMenuItem>
-                  
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
