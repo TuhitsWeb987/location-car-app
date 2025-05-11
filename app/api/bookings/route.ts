@@ -1,7 +1,8 @@
 // app/api/bookings/route.ts
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { getAllBookings } from "@/lib/services/booking";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 const bookingSchema = z.object({
@@ -13,7 +14,26 @@ const bookingSchema = z.object({
   returnLocationId: z.string().min(1),
 });
 
-export async function POST(req: Request) {
+export async function GET(req: NextRequest) {
+  try {
+    const allBookings = await getAllBookings();
+
+    return Response.json(
+      {
+        success: true,
+        data: allBookings,
+      },
+      {
+        status: 200,
+      }
+    );
+  } catch (error) {
+    console.error("[GET /api/bookings]", error);
+    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
     if (!session?.user) {
@@ -39,13 +59,14 @@ export async function POST(req: Request) {
       returnLocationId,
     } = parsed.data;
 
-    // Vérifier que la voiture existe
     const carExists = await prisma.car.findUnique({ where: { id: carId } });
     if (!carExists) {
-      return NextResponse.json({ error: "Voiture introuvable" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Voiture introuvable" },
+        { status: 404 }
+      );
     }
 
-    // Créer la réservation
     const booking = await prisma.rental.create({
       data: {
         pickupDate: new Date(pickupDate),

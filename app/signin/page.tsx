@@ -54,7 +54,6 @@ export default function SignInPage() {
 
     if (email.error) {
       toast.error(email.error.message);
-      return;
     } else {
       if (callbackUrl) {
         router.push(callbackUrl);

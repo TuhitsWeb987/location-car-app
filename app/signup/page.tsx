@@ -80,7 +80,6 @@ export default function SignUpPage() {
     if (email.error) {
       setLoading(false);
       toast.error(email.error.message);
-      return;
     } else {
       router.push("/");
     }
