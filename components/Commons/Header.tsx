@@ -74,7 +74,9 @@ export default function Header() {
           ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="p-2 py-6">
+                <Button onClick={() => {
+                  router.push('/profile')
+                }} variant="outline" className="p-2 py-6">
                   <span className="font-semibold">{user?.name}</span>
 
                   {user?.image ? (

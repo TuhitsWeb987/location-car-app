@@ -47,6 +47,7 @@ export default function SignInPage() {
 
   const onSubmit = async (data: Value) => {
     setLoading(true);
+    console.log(data.password)
     const email = await signIn.email({
       email: data.email,
       password: data.password,

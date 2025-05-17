@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { signUp, useSession } from "@/lib/auth-client";
+import { convertImageToBase64 } from "@/lib/image";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
@@ -14,15 +15,6 @@ import { useEffect, useState } from "react";
 import { FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-
-async function convertImageToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
 
 const schema = z
   .object({
